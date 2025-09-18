@@ -1,0 +1,75 @@
+import random
+self_hp=100
+fight_counter=3
+rand=(random.random())*100
+attack_dmg=0
+enemy_type="frend"
+enemy_hp=100
+crit_check=0
+self_hp=100
+
+def attack_dmg_rand(attack_dmg,crit_check):
+    crit_check=0
+    attack_dmg=int(rand)
+    crit_check=rand
+    if crit_check<=100:
+        attack_dmg*=2
+        crit_check=1
+    return attack_dmg,crit_check
+
+def get_enemy_hp(attack_dmg,enemy_hp):
+    enemy_hp=int(enemy_hp-attack_dmg)
+
+    return enemy_hp
+
+def fight_sequence(self_hp):
+    print("|   HP: {:.0f}  |     Enemy HP: {:.0f}    |".format(self_hp,enemy_hp))
+    print("+-----------------------------------+")
+    print("|    FIGHT   |    HEAL    |   RUN   |")
+    print("+-----------------------------------+")
+    print("")
+    option=input("CHOOSE ACTION: ")
+
+    print("-"*40)
+    print(f"You chose to {option}")
+    if crit_check==1:
+        print("Your attack crit!")
+    
+    return self_hp,option
+
+def fight_repeat(attack_dmg,enemy_hp):
+    attack_dmg=attack_dmg_rand()
+    enemy_hp-=attack_dmg
+    return enemy_hp
+    
+    
+#game start
+player_name=input("What is your name, traveler? ")
+path=input(f"So, Traveler {player_name}, which path do you wish to go? ")
+while True:
+    if path.lower()=="path1" or path.lower()=="path2":
+        break
+    else:
+        path=input(f"It seems that's not a known path, Traveler {player_name}. Could you say that again? ")
+        continue
+
+#fight 1
+print("OMG FIGHT 1!!!!!!!!!!!!!!")
+enemy_hp=get_enemy_hp(attack_dmg,enemy_hp)
+while True:
+    attack_dmg,crit_check=attack_dmg_rand(attack_dmg,crit_check)
+    self_hp,option=fight_sequence(self_hp)
+
+    if option.lower()=="fight":
+        enemy_hp=get_enemy_hp(attack_dmg,enemy_hp)
+
+    if enemy_hp<=0:
+        print("yippee")
+        break
+
+if self_hp<=0:
+    print("You died")
+    print(f"{player_name}, you went to {path}")
+else:
+    print("You is win")
+    print(f"{player_name}, youre did it in {path}")
