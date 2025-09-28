@@ -1,0 +1,166 @@
+import random
+player_hp=100
+enemy_hp=100
+attack_dmg=0
+crit_check=False
+stage=0
+inventory=[]
+
+
+def attack_dmg_rand():
+    attack_dmg=int(random.randint(10,20))
+    crit_rand=int(random.randint(1,100))
+    crit_check=False
+    if crit_rand<=10:
+        attack_dmg*=2
+        crit_check=True
+    return attack_dmg,crit_check
+
+def enemy_dmg_rand():
+    enemy_dmg=int(random.randint(10,15))
+    if enemy_dmg==0:
+        enemy_dmg=1
+    return enemy_dmg
+
+def get_enemy_hp(attack_dmg,enemy_hp):
+    enemy_hp=int(enemy_hp-attack_dmg)
+    return enemy_hp
+
+def get_player_hp(player_hp,enemy_dmg):
+    player_hp=int(player_hp-enemy_dmg)
+    return player_hp
+
+def fight_sequence(player_hp,attack_dmg,enemy_hp,crit_check):
+    print("   HP: {:.0f}   |   Enemy HP: {:.0f}".format(player_hp,enemy_hp))
+    print("+-----------------------------------+")
+    print("|    FIGHT   |    HEAL    |   RUN   |")
+    print("+-----------------------------------+")
+    print("")
+    option=input("CHOOSE ACTION: ")
+
+    print("-"*40)
+    print(f"{player_name} chose to {option}")
+    if option.lower()=="fight":
+        if crit_check==True:
+            print(f"A critical hit from {player_name}, dealing {attack_dmg}!")
+        else:
+            print(f"{player_name} attacked for {attack_dmg}")
+    
+    return option
+    
+#game start
+player_name=input("Once upon a time, in the land of Far Far Away, there was an ogre named...? ")
+path=input(f"This ogre, {player_name}, embarked on an epic journey for conquest. The path he took was that of...? Enter path1 or path2. ")
+while True:
+    if path.lower()=="path1" or path.lower()=="path2":
+        print (f"{player_name} began his journey on {path}.")
+        print ("All seemed well for the ogre, until danger struck.")
+        break
+    else:
+        path=input(f"It seemed the ogre was lost. To which path did he take?")
+        continue
+
+#fights
+while player_hp>0:
+    for i in range(3):
+        stage+=1
+        print(f"An enemy encounter! Battle {stage} of 3.")
+        print("+-----------------------------------+")
+        enemy_hp=100
+        while True:
+            option=fight_sequence(player_hp,attack_dmg,enemy_hp,crit_check)
+            
+            if option.lower()=="fight":
+                attack_dmg,crit_check=attack_dmg_rand()
+                enemy_hp=get_enemy_hp(attack_dmg,enemy_hp)
+            elif option.lower()=="heal":
+                if player_hp<100:
+                    player_hp+=20
+                    print(f"{player_name} eats an onion. Refreshing!")
+                elif player_hp>=100:
+                    print(f"Gluttony is considered sin") #lmao you can change this if u want
+            elif option.lower()=="run":
+                print("Bravery was not the ogre's strong suit.")
+                if stage==2 and path.lower()=="path1":
+                    inventory.append("Letter")
+                    print("Despite running away, he spotted a letter on the ground. It read 'the princess is in this tower'.")
+                    print("Letter added to Inventory")
+                break
+            elif enemy_hp<=0:
+                print("The ogre basked in his victory.")
+                #give player items
+                if stage==1 and path.lower()=="path2":
+                    inventory.append("Key")
+                    print("He saw something sparkle in the distance. It was a key.")
+                    print("Key added to Inventory")
+                if stage==3:
+                    print(f"{player_name} surpassed the tower's keep's minions. But was he to defeat the dragon guarding the castle's secrets?")
+                    print("Suddenly, a noble steed appeared out of thin air. He called himself 'Donkey'")
+                    donkey_trump_card=input(f"He wants to come with {player_name}. Is it a yes or a no? ")
+                    if donkey_trump_card.lower()=="yes":
+                        print(f"{player_name} decided to bring Donkey along the journey.")
+                        inventory.append("Donkey")
+                        print("Donkey added to Inventory")
+                    if donkey_trump_card.lower()=="no":
+                        print(f"{player_name} decided to leave him be. He wondered if he could have helped.")
+                break
+            else:
+                print("It seems the ogre was indecisive, what's his next move?")
+
+            if option.lower() in ["fight", "heal"] and enemy_hp>0:
+                enemy_dmg=enemy_dmg_rand()
+                player_hp = get_player_hp(player_hp, enemy_dmg)
+                print(f"The enemy hit you for {enemy_dmg}!")
+                print("+-----------------------------------+")
+            if enemy_hp<=0:
+                break
+
+#dragon/boss fight
+enemy_hp=250
+while player_hp>0 and enemy_hp>0:
+    if "Donkey" in inventory:
+        print(f"To {player_name}'s surprise, Donkey and the dragon hit it off very well. A good distraction lead to the great defeat of the dragon.")
+        enemy_hp=0
+        break
+    else:
+        option=fight_sequence(player_hp,attack_dmg,enemy_hp,crit_check)
+
+        if option.lower()=="fight":
+            attack_dmg, crit_check = attack_dmg_rand()
+            enemy_hp=get_enemy_hp(attack_dmg,enemy_hp)
+        elif option.lower()=="heal":
+            if player_hp<100:
+                player_hp+=20
+                print(f"{player_name} eats an onion. Refreshing!")
+            elif player_hp>=100:
+                print(f"Gluttony is considered sin") #lmao you can change this if u want
+        elif option.lower()=="run":
+                print(f"This fearsome foe is not one to flee from, {player_name}!")
+        else:
+            print("It seems the ogre was indecisive, what's his next move?")
+
+        if enemy_hp==0:
+            print("The ogre has slain the mighty dragon!")
+            break
+        
+        if option.lower() in ["fight", "heal"] and enemy_hp>0:
+            enemy_dmg=enemy_dmg_rand()
+            player_hp = get_player_hp(player_hp, enemy_dmg)
+            print(f"The Dragon hit you for {enemy_dmg}!")
+            print("+-----------------------------------+")
+    
+if player_hp<=0:
+    print(f"{player_name} died taking {path}. Poor ogre.")
+else:
+    if "Key" in inventory:
+        print (f"After defeating the dragon, {player_name} scoured the tower for any signs of treasure. As he climbed the stairs to the highest point of the tower," \
+        f"he spotted a door nestled deep in the dark hallway. With the key in hand, {player_name} unlocked the door expecting a chest full of jewels. Yet, what lie" \
+        " in his wake was a woman who called herself Fiona.")
+        print("Ending 1 of 3: Happily Ever After?")
+    elif "Letter" in inventory:
+        print (f"After defeating the dragon, {player_name} scoured the tower for any signs of life. Alas, he was too late. " \
+        "Unbeknownst to him, the princess had already escaped by herself, leaving none but her handkerchief signed 'Fiona of Far Far Away'")
+        print("Ending 2 of 3: Rumpelstiltskin AU")
+    else:
+        print(f"The battle was won, but he felt as if something was missing. {player_name} returned to the kingdom emptyhanded.")
+        print("Ending 3 of 3: No Star")
